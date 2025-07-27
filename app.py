@@ -26,21 +26,22 @@ for tier in tiers:
 # --- Calculation Function ---
 def calculate_profits(tiers):
     results = {}
-    previous_cost = 0
+    previous_total_cost = 0
     for tier, data in tiers.items():
-        raw_cost = data["raw_qty"] * data["raw_price"]
-        total_cost = raw_cost + previous_cost
+        crafting_cost = data["raw_qty"] * data["raw_price"]  # Only this tier
+        total_cost = crafting_cost + previous_total_cost     # Cumulative
         profit = data["refined_value"] - total_cost
         profit_percent = (profit / total_cost) * 100 if total_cost != 0 else 0
 
         results[tier] = {
-            "Total Raw Cost": round(total_cost),
+            "Crafting Cost (This Tier)": round(crafting_cost),
+            "Total Cost (Up to Tier)": round(total_cost),
             "Refined Value": round(data["refined_value"]),
             "Profit": round(profit),
             "Profit %": round(profit_percent, 2)
         }
 
-        previous_cost = total_cost
+        previous_total_cost = total_cost
 
     return results
 
@@ -50,10 +51,11 @@ results = calculate_profits(tiers)
 st.subheader("📊 Results Summary")
 st.write("Profit is calculated based on total raw cost up to each tier.")
 
-# --- Display Result Table ---
+# --- Display Table ---
 st.table({
     tier: {
-        "Total Cost": f"{data['Total Raw Cost']:,}",
+        "Crafting Cost": f"{data['Crafting Cost (This Tier)']:,}",
+        "Total Cost": f"{data['Total Cost (Up to Tier)']:,}",
         "Refined Value": f"{data['Refined Value']:,}",
         "Profit": f"{data['Profit']:,}",
         "Profit %": f"{data['Profit %']}%"
